@@ -1,7 +1,6 @@
 package ru.practicum.user;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.exception.ObjectNotFoundException;
 
 import java.util.*;
 
@@ -29,9 +28,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void deleteUser(long userId) {
-        if (!users.containsKey(userId)) {
-            throw new ObjectNotFoundException(String.format("Объект класса %s не найден", User.class));
-        }
         users.remove(userId);
     }
 }

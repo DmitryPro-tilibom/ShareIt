@@ -52,6 +52,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(long userId) {
+        if (userRepository.getUserById(userId).isEmpty()) {
+            throw new ObjectNotFoundException(String.format("Объект класса %s не найден", User.class));
+        }
         userRepository.deleteUser(userId);
     }
 
