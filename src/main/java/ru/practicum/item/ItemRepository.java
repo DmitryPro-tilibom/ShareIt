@@ -1,14 +1,16 @@
 package ru.practicum.item;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
 import java.util.List;
-import java.util.Optional;
 
-public interface ItemRepository {
-    Optional<Item> getItemById(long id);
+public interface ItemRepository extends JpaRepository<Item, Long> {
+    List<Item> findAllByOwnerId(long userId);
 
-    List<Item> getItemsByOwner(long userId);
-
-    List<Item> getItemsByText(String text);
-
-    Item saveNewItem(Item item, long userId);
+    @Query("SELECT i FROM Item i " +
+            "WHERE (UPPER(i.name) LIKE UPPER(CONCAT('%', ?1, '%')) " +
+            "OR UPPER(i.description) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
+            "AND i.available = true")
+    List<Item> search(String text);
 }

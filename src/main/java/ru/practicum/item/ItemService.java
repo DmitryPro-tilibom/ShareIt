@@ -1,15 +1,22 @@
 package ru.practicum.item;
 
+import ru.practicum.item.comment.dto.CommentDtoText;
+import ru.practicum.item.comment.dto.CommentDto;
+import ru.practicum.item.dto.ItemDtoNameDescription;
+import ru.practicum.item.dto.ItemDto;
+
 import java.util.List;
 
 public interface ItemService {
-    ItemDto getItemById(long itemId);
+    ItemDto getItemById(long itemId, long userId);
 
     List<ItemDto> getItemsByOwner(long userId);
 
-    List<ItemDto> getItemsByText(String text);
+    List<ItemDto> getItemBySearch(String text);
 
-    ItemDto saveNewItem(ItemDto itemDto, long userId);
+    ItemDto saveNewItem(ItemDtoNameDescription itemDtoIn, long userId);
 
-    ItemDto updateItem(long itemId, ItemDto itemDto, long userId);
+    ItemDto updateItem(long itemId, ItemDtoNameDescription itemDtoIn, long userId);
+
+    CommentDto saveNewComment(long itemId, CommentDtoText commentDtoIn, long userId);
 }

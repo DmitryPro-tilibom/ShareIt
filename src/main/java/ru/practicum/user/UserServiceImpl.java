@@ -1,66 +1,68 @@
 package ru.practicum.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.exception.EmailExistsException;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.ObjectNotFoundException;
+import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.dto.UserMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getAllUsers() {
-        return userRepository.getAllUsers().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        log.info("Получение всех пользователей");
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto getUserById(long userId) {
-        User user = userRepository.getUserById(userId).orElseThrow(() ->
+        log.info("Получение пользователя по идентификатору {}", userId);
+        User user = userRepository.findById(userId).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Объект класса %s не найден", User.class)));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto saveNewUser(UserDto userDto) {
-        checkEmail(userDto);
-        User user = userRepository.saveNewUser(UserMapper.toUser(userDto));
+        log.info("Создание нового пользователя {}", userDto.getName());
+        User user = userRepository.save(UserMapper.toUser(userDto));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto updateUser(long userId, UserDto userDto) {
-        User user = userRepository.getUserById(userId).orElseThrow(() ->
+        log.info("Обновление существующего пользователя {}", userDto.getName());
+        User oldUser = userRepository.findById(userId).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Объект класса %s не найден", User.class)));
         String name = userDto.getName();
         String email = userDto.getEmail();
         if (name != null && !name.isBlank()) {
-            user.setName(name);
+            oldUser.setName(name);
         }
         if (email != null && !email.isBlank()) {
-            if(!user.getEmail().equals(userDto.getEmail())) {
-                checkEmail(userDto);
-            }
-            user.setEmail(email);
+            oldUser.setEmail(email);
         }
-        return UserMapper.toUserDto(user);
+        return UserMapper.toUserDto(oldUser);
     }
 
     @Override
     public void deleteUser(long userId) {
-        if (userRepository.getUserById(userId).isEmpty()) {
+        log.info("Удаление пользователя по идентификатору {}", userId);
+        if (userRepository.findById(userId).isEmpty()) {
             throw new ObjectNotFoundException(String.format("Объект класса %s не найден", User.class));
         }
-        userRepository.deleteUser(userId);
-    }
-
-    private void checkEmail(UserDto userDto) {
-        if (userRepository.getAllUsers().stream().anyMatch(user -> user.getEmail().equals(userDto.getEmail()))) {
-            throw new EmailExistsException(String.format("Email %s уже используется", userDto.getEmail()));
-        }
+        userRepository.deleteById(userId);
     }
 }
