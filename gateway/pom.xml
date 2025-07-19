@@ -7,10 +7,10 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ShareIt-gateway</artifactId>
+    <artifactId>gateway</artifactId>
     <packaging>jar</packaging>
 
-    <name>ShareIt-gateway</name>
+    <name>gateway</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -23,6 +23,10 @@
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
     </dependencies>
 </project>
