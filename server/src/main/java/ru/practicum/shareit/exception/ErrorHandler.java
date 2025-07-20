@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, ItemIsNotAvailableException.class,
-            NotBookerException.class, UnsupportedStatusException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, IllegalViewAndUpdateException.class,
+            ItemIsNotAvailableException.class, NotBookerException.class, UnsupportedStatusException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response validateException(RuntimeException e) {
         log.info(e.getMessage());
         return new Response(e.getMessage());
     }
 
-    @ExceptionHandler({ObjectNotFoundException.class, IllegalViewAndUpdateException.class,
+    @ExceptionHandler({ObjectNotFoundException.class,
             NotAvailableToBookOwnItemsException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Response entityNotFoundException(RuntimeException e) {
